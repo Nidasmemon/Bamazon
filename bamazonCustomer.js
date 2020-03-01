@@ -68,19 +68,32 @@ function menu() {
             // console.log(results);
             // console.log("Quantity is: " + quantity);
             // console.log("Cost is: " + cost);
-            checkStock(quantity, results[0].stock_quantity, cost);
+            checkStock(quantity, results[0].stock_quantity, cost, productID);
         })
         
     })
 }
 
-function checkStock(quantity, stock, cost) {
+function checkStock(quantity, stock, cost, productID) {
     if (quantity > stock) {
         console.log("Insufficient quantity!");
         connection.end();
     }
     else {
         var total = quantity * cost;
-        console.log("Your order has been processed. Your total is: ", total);
+        var newStock = stock - quantity;
+        connection.query("UPDATE products SET ? WHERE ?",
+        [
+            {
+                stock_quantity: newStock
+            },
+            {
+                item_id: productID
+            }
+        ],
+        function(err, response) {
+            if (err) throw err;
+        })
+        console.log("Your order has been processed. Your total is: " + total);
     }
 }
