@@ -9,20 +9,16 @@ var connection = mysql.createConnection({
     database: "bamazon"
 })
 
-connection.connect(function(err) {
+connection.connect(function (err) {
     if (err) throw err;
     start();
 })
 
 function start() {
-    connection.query("SELECT * FROM products", function(err, results) {
+    connection.query("SELECT item_id, product_name, price FROM products", function (err, results) {
         if (err) throw err;
-        // console.log(results);
-        for (var i = 0; i < results.length; i++) {
-            console.log(results[i].item_id + "\t" + results[i].product_name + " --- $" + results[i].price);
-        }
+        console.table(results);
         menu();
-        // connection.end();
     });
 }
 
@@ -32,7 +28,7 @@ function menu() {
             type: "input",
             message: "Enter the ID of the product you would like to buy:",
             name: "id",
-            validate: function(value) {
+            validate: function (value) {
                 if (isNaN(value) === false) {
                     return true;
                 }
@@ -44,34 +40,30 @@ function menu() {
             type: "input",
             message: "How many would you like to buy?",
             name: "amount",
-            validate: function(value) {
+            validate: function (value) {
                 if (isNaN(value) === false) {
                     return true;
                 }
                 return false;
             }
-            
         }
     ])
-    .then(function(input) {
+        .then(function (input) {
 
-        var productID = input.id;
-        var quantity = parseInt(input.amount);
+            var productID = input.id;
+            var quantity = parseInt(input.amount);
 
-        connection.query("SELECT item_id, stock_quantity, price FROM products WHERE ?", 
-        {
-            Item_id: productID
-        },
-        function(err, results) {
-            if (err) throw err;
-            var cost = results[0].price;
-            // console.log(results);
-            // console.log("Quantity is: " + quantity);
-            // console.log("Cost is: " + cost);
-            checkStock(quantity, results[0].stock_quantity, cost, productID);
+            connection.query("SELECT item_id, stock_quantity, price FROM products WHERE ?",
+                {
+                    Item_id: productID
+                },
+                function (err, results) {
+                    if (err) throw err;
+                    var cost = results[0].price;
+                    checkStock(quantity, results[0].stock_quantity, cost, productID);
+                })
+
         })
-        
-    })
 }
 
 function checkStock(quantity, stock, cost, productID) {
@@ -83,17 +75,18 @@ function checkStock(quantity, stock, cost, productID) {
         var total = quantity * cost;
         var newStock = stock - quantity;
         connection.query("UPDATE products SET ? WHERE ?",
-        [
-            {
-                stock_quantity: newStock
-            },
-            {
-                item_id: productID
-            }
-        ],
-        function(err, response) {
-            if (err) throw err;
-        })
+            [
+                {
+                    stock_quantity: newStock
+                },
+                {
+                    item_id: productID
+                }
+            ],
+            function (err, response) {
+                if (err) throw err;
+            })
         console.log("Your order has been processed. Your total is: " + total);
+        connection.end();
     }
 }
