@@ -13,5 +13,15 @@ MySQL Workbench
 If you would like to demo the customer application, [click here](./customer.mov)
 If you would like to demo the manager application, [click here](./manager.mov)
 
+* This is what the database looks like initially:
+![Initial data](/images/table1.png)
 
+* This is the updated database after the customer purchases 5 T-shirts
+![After purchase](/images/table2.png)
+
+* The database has been updated once the manager has added 10 crayon items. 
+![Added inventory](/images/table3.png)
+
+* The updated database, after the manager has added a new item, computer.
+![New item added](/images/table4.png)
 
